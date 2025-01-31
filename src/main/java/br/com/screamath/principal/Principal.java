@@ -2,8 +2,10 @@ package br.com.screamath.principal;
 
 import br.com.screamath.model.DadosSerie;
 import br.com.screamath.model.Serie;
+import br.com.screamath.repository.SerieRepository;
 import br.com.screamath.service.ConsumoAPI;
 import br.com.screamath.service.ConverteDados;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,12 @@ public class Principal {
     private ConverteDados conversor = new ConverteDados();
     private List<Serie> serie = new ArrayList<>();
     private List<DadosSerie> dadosSeries = new ArrayList<>();
+
+    @Autowired
+    private SerieRepository repositorio;
+    public Principal(SerieRepository repositorio) {
+     this.repositorio =repositorio;
+    }
 
     public void exibirMenu(){
         var menu =
@@ -41,7 +49,7 @@ public class Principal {
                     buscaPorEpisodios();
                     break;
                 case 3:
-                    listarSerie();
+                    SalvarNalistarSerie();
                     break;
 
                 case 0:
@@ -56,7 +64,9 @@ public class Principal {
     private void buscaSerieNaWeb() {
      DadosSerie dados = obterDadosdaSerie();
      Serie serie = new Serie(dados);
-     dadosSeries.add(dados);
+//     dadosSeries.add(dados);
+     repositorio.save(serie);
+
         System.out.println(dados);
 
 
@@ -77,6 +87,7 @@ public class Principal {
 
     }
 
-    private void listarSerie() {
+    private void SalvarNalistarSerie() {
+
     }
 }

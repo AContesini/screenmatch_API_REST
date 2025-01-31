@@ -1,5 +1,6 @@
 package br.com.screamath.model;
 
+import br.com.screamath.traducao.ConsultaMyMemory;
 import jakarta.persistence.*;
 
 import java.util.OptionalDouble;
@@ -26,7 +27,7 @@ public class Serie {
     private String sinopse;
 
 
-    
+
     private String poster;
 
     public Serie(DadosSerie dadosSerie) {
@@ -36,6 +37,8 @@ public class Serie {
         this.poster = dadosSerie.poster();
         this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
         this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());
+        String sinopseTraduzida = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse().trim());
+        this.sinopse = sinopseTraduzida.length() > 255 ? sinopseTraduzida.substring(0,255):sinopseTraduzida;
 
 
     }
