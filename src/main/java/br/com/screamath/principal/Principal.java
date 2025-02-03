@@ -118,7 +118,8 @@ public class Principal {
 
     }
 
-    private void SalvarNalistaSerie() { serie = repositorio.findAll();
+    private void SalvarNalistaSerie() { 
+        serie = repositorio.findAll();
 
         serie.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
