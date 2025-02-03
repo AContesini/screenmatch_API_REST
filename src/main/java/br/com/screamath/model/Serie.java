@@ -3,6 +3,8 @@ package br.com.screamath.model;
 import br.com.screamath.traducao.ConsultaMyMemory;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
 @Entity
@@ -26,9 +28,13 @@ public class Serie {
 
     private String sinopse;
 
-
-
     private String poster;
+
+
+
+
+    public Serie() {
+    }
 
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();
@@ -44,6 +50,18 @@ public class Serie {
     }
 
 
+    @OneToMany(mappedBy ="serie",cascade =CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Episodios> episodios = new ArrayList<>();
+
+
+    public List<Episodios> getEpisodios() {
+        return episodios;
+
+    }
+    public void setEpisodios(List<Episodios> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
+    }
     public String getPoster() {
         return poster;
     }
@@ -117,6 +135,7 @@ public class Serie {
                 ", genero=" + genero +
                 ", atores='" + atores  +
                 ", sinopse='" + sinopse +
-                ", poster='" + poster ;
+                ", poster='" + poster+
+                "episodios=" + episodios;
     }
 }

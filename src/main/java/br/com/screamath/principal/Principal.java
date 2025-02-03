@@ -1,15 +1,16 @@
 package br.com.screamath.principal;
 
 import br.com.screamath.model.DadosSerie;
+import br.com.screamath.model.DadosTemporada;
+import br.com.screamath.model.Episodios;
 import br.com.screamath.model.Serie;
 import br.com.screamath.repository.SerieRepository;
 import br.com.screamath.service.ConsumoAPI;
 import br.com.screamath.service.ConverteDados;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner leitura = new Scanner(System.in);
@@ -18,6 +19,7 @@ public class Principal {
     private ConsumoAPI consumo = new ConsumoAPI();
     private ConverteDados conversor = new ConverteDados();
     private List<Serie> serie = new ArrayList<>();
+    private Optional<Serie> seriebuscadaOptinal;
     private List<DadosSerie> dadosSeries = new ArrayList<>();
 
     @Autowired
@@ -49,7 +51,7 @@ public class Principal {
                     buscaPorEpisodios();
                     break;
                 case 3:
-                    SalvarNalistarSerie();
+                    SalvarNalistaSerie();
                     break;
 
                 case 0:
@@ -74,7 +76,7 @@ public class Principal {
 
     private DadosSerie obterDadosdaSerie(){
 
-        System.out.println("Digite nome de um Serie");
+        System.out.println("Digite nome de uma Serie");
         var serieBuscada = leitura.nextLine();
         leitura.nextLine();
         var json = consumo.obterDados(ENDERECO+serieBuscada.toLowerCase().replace(" ","+")+API_KEY);
@@ -84,10 +86,42 @@ public class Principal {
     }
 
     private void buscaPorEpisodios() {
+        SalvarNalistaSerie();
+        System.out.println("Digite nome de uma Serie");
+       var serieBuscada = leitura.nextLine();
+
+       seriebuscadaOptinal = serie.stream()
+               .filter(s -> s.getTitulo().toLowerCase().contains(serieBuscada.toLowerCase()))
+               .findFirst();
+      if(seriebuscadaOptinal.isPresent()) {
+          var serieEncontrada = seriebuscadaOptinal.get();
+          List<DadosTemporada> temporadas = new ArrayList<>();
+          for (int i = 1; i <= serieEncontrada.getTotalTemporadas(); i++) {
+              var json = consumo.obterDados(ENDERECO + serieEncontrada.getTitulo().replace(" ", "+")+"&season="+ i + API_KEY);
+              DadosTemporada dadosTemporada = conversor.obetemDados(json,DadosTemporada.class);
+              temporadas.add(dadosTemporada);
+
+          }
+          temporadas.forEach(System.out::println);
+
+          List<Episodios> episodios = temporadas.stream()
+                  .flatMap(d -> d.episodios().stream()
+                          .map(e -> new Episodios(d.numero(),e)))
+                  .collect(Collectors.toList());
+
+          serieEncontrada.setEpisodios(episodios);
+          repositorio.save(serieEncontrada);
+      }else {
+          System.out.println("Serie não encontrada");
+      }
+
 
     }
 
-    private void SalvarNalistarSerie() {
+    private void SalvarNalistaSerie() { serie = repositorio.findAll();
 
+        serie.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))
+                .forEach(System.out::println);
     }
 }
