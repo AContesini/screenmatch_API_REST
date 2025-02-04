@@ -31,9 +31,14 @@ public class Principal {
     public void exibirMenu(){
         var menu =
                 """
-                1-Inserir novas Series
-                2-Buscas episodio
-                3-Listar Serie Buscada
+                1- Inserir novas Series
+                2- Buscas episodio
+                3- Listar Serie Buscada
+                4- Buscar uma Serie por nome
+                5- Buscar por Nome de Ator
+                6- Busca Top 5
+                7- Busca por Genero
+                8- Busca por Quantidade de Temporadas e Avalição
                 0-Sair 
                 """;
         var opcao = -1;
@@ -53,7 +58,21 @@ public class Principal {
                 case 3:
                     SalvarNalistaSerie();
                     break;
-
+                case  4:
+                    buscaPorNomeSerie();
+                    break;
+                case 5:
+                    buscaPorNomeAtor();
+                    break;
+                case 6:
+                    buscarPorTopSeries();
+                    break;
+                case 7:
+                    buscaPorGenero();
+                    break;
+                case 8:
+                    buscaPorQuantidadeDeTemporadas();
+                    break;
                 case 0:
                     System.out.println("saindo...");
                 default:
@@ -62,6 +81,9 @@ public class Principal {
             }
         }
     }
+
+
+
 
     private void buscaSerieNaWeb() {
      DadosSerie dados = obterDadosdaSerie();
@@ -125,4 +147,56 @@ public class Principal {
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
     }
+    private void buscaPorNomeSerie() {
+        System.out.println("Digite nome da Serie Buscada");
+        var buscaSerie = leitura.nextLine();
+
+//        seriebuscadaOptinal = repositorio.buscaPorNome(buscaSerie);
+
+        seriebuscadaOptinal =repositorio.findByTituloContainsIgnoreCase(buscaSerie);
+
+        if(seriebuscadaOptinal.isPresent()){
+            System.out.println(seriebuscadaOptinal.get().getTitulo());
+        }
+        else{
+            System.out.println("Serie não Encontrada");
+        }
+    }
+
+    private void buscaPorNomeAtor() {
+        System.out.println("Digite parte do nome do Ator");
+        var ator = leitura.nextLine();
+       List<Serie> buscaporAtor = repositorio.findByAtoresContainsIgnoreCase(ator);
+        System.out.println("Series em que " + ator + " trabalhou\n");
+       buscaporAtor.forEach( s -> System.out.println("Serie: "+s.getTitulo()));
+
+    }
+    private void buscarPorTopSeries() {
+
+        List<Serie> buscaporTop5Series = repositorio.buscaporTop();
+        buscaporTop5Series.forEach(System.out::println);
+    }
+
+    private void buscaPorGenero() {
+        System.out.println("Digite o Genero que você busca");
+        var genero = leitura.nextLine();
+        List<Serie> buscaGenero= repositorio.buscaPorGenero(genero);
+        buscaGenero.forEach(s -> System.out.println("Serie: "+ s.getTitulo() + ", "+s.getGenero()));
+    }
+    private void buscaPorQuantidadeDeTemporadas() {
+        System.out.println("Digite o Maximo de temporadas que busca ");
+        var numTemporada = leitura.nextInt();
+        System.out.println("Qual a nota da avaliação buscada?");
+        var notaSerie = leitura.nextDouble();
+
+        List<Serie> maximoDeTemporda = repositorio.bucaPorNumTemporaENota(numTemporada,notaSerie);
+        maximoDeTemporda.forEach(s-> System.out.println("Serie " + s.getTitulo() +
+                ", Temporadas:" + s.getTotalTemporadas() +
+                ", Avaliação:" + s.getAvaliacao()));
+
+
+    }
+
+
+
 }
