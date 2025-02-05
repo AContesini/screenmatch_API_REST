@@ -6,19 +6,24 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 @Entity
-@Table(name = "episodios")
+@Table(name = "episodios",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"titulo", "numeroEpisodio", "temporada", "serie_id"})
+        })
 public class Episodios {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer temporada;
+    @Column(nullable = false)
     private String titulo;
     private Integer numeroEpisodio;
     private Double avaliacao;
     private LocalDate dataLancamento;
 
     @ManyToOne
+    @JoinColumn(name = "serie_id", nullable = false)
     private Serie serie;
 
     public Episodios(){}

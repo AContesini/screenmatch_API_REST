@@ -42,7 +42,7 @@ public class Serie {
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.poster = dadosSerie.poster();
         this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
-        this.genero = Categoria.fromPortugues(dadosSerie.genero().split(",")[0].trim());
+        this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());
         String sinopseTraduzida = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse().trim());
         this.sinopse = sinopseTraduzida.length() > 255 ? sinopseTraduzida.substring(0,255):sinopseTraduzida;
 
