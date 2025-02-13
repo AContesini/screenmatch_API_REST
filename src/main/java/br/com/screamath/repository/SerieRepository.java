@@ -1,5 +1,6 @@
 package br.com.screamath.repository;
 
+import br.com.screamath.model.Categoria;
 import br.com.screamath.model.Episodios;
 import br.com.screamath.model.Serie;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,9 +41,11 @@ public interface SerieRepository extends JpaRepository<Serie, Long>{
     @Query("SELECT s FROM Serie s " +
             "JOIN s.episodios e " +
             "GROUP BY s " +
-            "ORDER BY MAX(e.dataLancamento) DESC LIMIT 5 ")
+            "ORDER BY MAX(e.dataLancamento) DESC ")
     List<Serie> lancamentosMaisRecentes();
     //Selecionado episodios por temporada
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :numero")
     List<Episodios> obterEpisodiosPorTemporada(Long id, Long numero);
+
+    List<Serie> findByGenero(Categoria categoria);
 }

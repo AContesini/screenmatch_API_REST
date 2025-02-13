@@ -2,6 +2,7 @@ package br.com.screamath.service;
 
 import br.com.screamath.dto.EpisodioDTO;
 import br.com.screamath.dto.SerieDTO;
+import br.com.screamath.model.Categoria;
 import br.com.screamath.model.Serie;
 import br.com.screamath.repository.SerieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +74,10 @@ public class SerieService {
                 .stream()
                 .map(e -> new EpisodioDTO(e.getTemporada(), e.getNumeroEpisodio(), e.getTitulo()))
                 .collect(Collectors.toList());
+    }
+
+    public List<SerieDTO> obterPorCatgoria(String nomeGenero) {
+        Categoria categoria = Categoria.fromPortugues(nomeGenero);
+        return obterDados(repository.findByGenero(categoria));
     }
 }
